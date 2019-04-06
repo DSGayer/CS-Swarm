@@ -1,0 +1,10 @@
+C:\Users\dylan\source\repos\CS_Swarm\CS_Swarm\bin\Debug\CS_Swarm.exe.config
+C:\Users\dylan\source\repos\CS_Swarm\CS_Swarm\bin\Debug\CS_Swarm.exe
+C:\Users\dylan\source\repos\CS_Swarm\CS_Swarm\bin\Debug\CS_Swarm.pdb
+C:\Users\dylan\source\repos\CS_Swarm\CS_Swarm\obj\Debug\CS_Swarm.Form1.resources
+C:\Users\dylan\source\repos\CS_Swarm\CS_Swarm\obj\Debug\CS_Swarm.Properties.Resources.resources
+C:\Users\dylan\source\repos\CS_Swarm\CS_Swarm\obj\Debug\CS_Swarm.csproj.GenerateResource.Cache
+C:\Users\dylan\source\repos\CS_Swarm\CS_Swarm\obj\Debug\CS_Swarm.csproj.CoreCompileInputs.cache
+C:\Users\dylan\source\repos\CS_Swarm\CS_Swarm\obj\Debug\CS_Swarm.exe
+C:\Users\dylan\source\repos\CS_Swarm\CS_Swarm\obj\Debug\CS_Swarm.pdb
+C:\Users\dylan\source\repos\CS_Swarm\CS_Swarm\obj\Debug\CS_Swarm.csprojResolveAssemblyReference.cache
