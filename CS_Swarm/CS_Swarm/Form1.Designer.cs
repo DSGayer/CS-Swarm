@@ -63,6 +63,7 @@
             this.mapButton.TabIndex = 2;
             this.mapButton.Text = "Map";
             this.mapButton.UseVisualStyleBackColor = true;
+            this.mapButton.Click += new System.EventHandler(this.mapButton_Click);
             // 
             // Form1
             // 

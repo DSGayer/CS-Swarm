@@ -16,7 +16,7 @@ namespace CS_Swarm
         ArrayList rawData = new ArrayList();
         ArrayList frontiers = new ArrayList();
         ArrayList shapes = new ArrayList();
-        MqttClient client = new MqttClient("192.168.1.59");
+        MqttClient client;
         bool scanning = false;
 
         PointF botLocation = new PointF(200, 200); // Value is dependent on Ian's Algorithm
@@ -24,21 +24,84 @@ namespace CS_Swarm
         public Form1()
         {
             InitializeComponent();
+            client = new MqttClient("127.0.0.1");
+            client.Connect(Guid.NewGuid().ToString());
+            Debug.Write("starting");
         }
+        public void mapButton_Clicfdgk(object sender, System.Windows.Forms.PaintEventArgs e)
+        {
+            ConnectToDataSet();
+            while (scanning)
+            {
+                Debug.Write("scanning");
+            }
+            Debug.Write("done");
 
+            ArrayList borders = new ArrayList();
+            foreach (OrderedPair p in rawData)
+            {
+                int index = rawData.IndexOf(p);
+
+                if (p.identifier == 1)
+                {
+                    frontiers.Add(p);
+                }
+                else if (p.identifier == 0)
+                {
+                    borders.Add(p);
+                }
+            }
+
+            // Create the shapes and combine if there are common points
+            int i = rawData.IndexOf(borders[1]);
+            ArrayList perimeter = new ArrayList();
+
+            foreach (OrderedPair q in borders)
+            {
+                perimeter.Add(q);
+                perimeter.Add(rawData[i - 1]);
+            }
+
+            shapes.Add(new Shape(perimeter));
+
+            foreach (Shape s in shapes)
+            {
+                foreach (OrderedPair x in s.perimeter)
+                {
+                    if (x.identifier == 1 && !frontiers.Contains(x))
+                    {
+                        frontiers.Add(x);
+                    }
+                }
+            }
+
+            // Actually do the thing
+            Pen pen = new Pen(Color.DarkSlateGray, 2);
+            foreach (Shape r in shapes)
+            {
+                PointF[] per = new PointF[r.perimeter.Count - 1];
+                for (int j = 0; j < r.perimeter.Count; j++)
+                {
+                    per[j] = ((OrderedPair)(r.perimeter[j])).toPlot();
+                }
+                e.Graphics.DrawClosedCurve(pen, per);
+            }
+            generateNextLocation(borders, frontiers, botLocation);
+            pen.Dispose();
+
+        }
         private void ConnectToDataSet()
         {
             scanning = true;
-            byte code = client.Connect(Guid.NewGuid().ToString());
-            ushort subMsgId = client.Subscribe(new string[] { "/data", "/scanning" },
+            /*ushort subMsgId = client.Subscribe(new string[] { "/data", "/scanning" },
                 new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE,
                 MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });
             client.MqttMsgPublishReceived += client_MqttMsgPublishReceived;
-            client.MqttMsgPublished += client_MqttMsgPublished;
-            ushort pubMsgId = client.Publish("/scanning", // topic
-               Encoding.UTF8.GetBytes("start"), // message body
-               MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, // QoS level
-               false); // retained
+            client.MqttMsgPublished += client_MqttMsgPublished;*/
+            // ushort pubMsgId = client.Publish("/scanning", // topic
+               // Encoding.UTF8.GetBytes("start"), // message body
+               // MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, // QoS level
+               // false); // retained
         }
 
         void client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
@@ -65,70 +128,11 @@ namespace CS_Swarm
 
         private void exitButton_Click(object sender, EventArgs e)
         {
+            client.Disconnect();
             this.Close();
         }
 
-        private void mapButton_Click(object sender, PaintEventArgs e)
-        {
-                ConnectToDataSet();
-                while (scanning)
-                {
-                    Debug.Write("scanning");
-                }
-
-                ArrayList borders = new ArrayList();
-                foreach (OrderedPair p in rawData)
-                {
-                    int index = rawData.IndexOf(p);
-
-                    if (p.identifier == 1)
-                    {
-                        frontiers.Add(p);
-                    }
-                    else if (p.identifier == 0)
-                    {
-                        borders.Add(p);
-                    }
-                }
-
-                // Create the shapes and combine if there are common points
-                int i = rawData.IndexOf(borders[1]);
-                ArrayList perimeter = new ArrayList();
-
-                foreach (OrderedPair q in borders)
-                {
-                    perimeter.Add(q);
-                    perimeter.Add(rawData[i - 1]);
-                }
-
-                shapes.Add(new Shape(perimeter));
-
-                foreach (Shape s in shapes)
-                {
-                    foreach (OrderedPair x in s.perimeter)
-                    {
-                        if (x.identifier == 1 && !frontiers.Contains(x))
-                        {
-                            frontiers.Add(x);
-                        }
-                    }
-                }
-
-                // Actually do the thing
-                Pen pen = new Pen(Color.DarkSlateGray, 2);
-                foreach (Shape r in shapes)
-                {
-                    PointF[] per = new PointF[r.perimeter.Count - 1];
-                    for (int j = 0; j < r.perimeter.Count; j++)
-                    {
-                        per[j] = ((OrderedPair)(r.perimeter[j])).toPlot();
-                    }
-                    e.Graphics.DrawClosedCurve(pen, per);
-                }
-                generateNextLocation(borders, frontiers, botLocation);
-                pen.Dispose();
-                client.Disconnect();
-        }
+        
 
         private void generateNextLocation(ArrayList borders, ArrayList frontiers, PointF botLocation)
         {
@@ -196,6 +200,68 @@ namespace CS_Swarm
         private void Form1_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void mapButton_Click(object sender, EventArgs e)
+        {
+            ConnectToDataSet();
+            while (scanning)
+            {
+                Debug.Write("scanning");
+            }
+            Debug.Write("done");
+
+            ArrayList borders = new ArrayList();
+            foreach (OrderedPair p in rawData)
+            {
+                int index = rawData.IndexOf(p);
+
+                if (p.identifier == 1)
+                {
+                    frontiers.Add(p);
+                }
+                else if (p.identifier == 0)
+                {
+                    borders.Add(p);
+                }
+            }
+
+            // Create the shapes and combine if there are common points
+            int i = rawData.IndexOf(borders[1]);
+            ArrayList perimeter = new ArrayList();
+
+            foreach (OrderedPair q in borders)
+            {
+                perimeter.Add(q);
+                perimeter.Add(rawData[i - 1]);
+            }
+
+            shapes.Add(new Shape(perimeter));
+
+            foreach (Shape s in shapes)
+            {
+                foreach (OrderedPair x in s.perimeter)
+                {
+                    if (x.identifier == 1 && !frontiers.Contains(x))
+                    {
+                        frontiers.Add(x);
+                    }
+                }
+            }
+
+            // Actually do the thing
+            Pen pen = new Pen(Color.DarkSlateGray, 2);
+            foreach (Shape r in shapes)
+            {
+                PointF[] per = new PointF[r.perimeter.Count - 1];
+                for (int j = 0; j < r.perimeter.Count; j++)
+                {
+                    per[j] = ((OrderedPair)(r.perimeter[j])).toPlot();
+                }
+                e.Graphics.DrawClosedCurve(pen, per);
+            }
+            generateNextLocation(borders, frontiers, botLocation);
+            pen.Dispose();
         }
     }
 }

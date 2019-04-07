@@ -17,3 +17,5 @@ C:\Users\itslagle\Source\Repos\CS-Swarm\CS_Swarm\CS_Swarm\obj\Debug\CS_Swarm.csp
 C:\Users\itslagle\Source\Repos\CS-Swarm\CS_Swarm\CS_Swarm\obj\Debug\CS_Swarm.Form1.resources
 C:\Users\itslagle\Source\Repos\CS-Swarm\CS_Swarm\CS_Swarm\obj\Debug\CS_Swarm.Properties.Resources.resources
 C:\Users\itslagle\Source\Repos\CS-Swarm\CS_Swarm\CS_Swarm\obj\Debug\CS_Swarm.csproj.GenerateResource.Cache
+C:\Users\itslagle\Source\Repos\CS-Swarm\CS_Swarm\CS_Swarm\bin\Debug\M2Mqtt.Net.dll
+C:\Users\itslagle\Source\Repos\CS-Swarm\CS_Swarm\CS_Swarm\bin\Debug\M2Mqtt.Net.pdb
