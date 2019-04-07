@@ -30,15 +30,20 @@ namespace CS_Swarm
         {
             scanning = true;
             byte code = client.Connect(Guid.NewGuid().ToString());
-            ushort msgId = client.Subscribe(new string[] { "/obstacle", "/dataset" },
+            ushort subMsgId = client.Subscribe(new string[] { "/data", "/scanning" },
                 new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE,
                 MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });
             client.MqttMsgPublishReceived += client_MqttMsgPublishReceived;
+            client.MqttMsgPublished += client_MqttMsgPublished;
+            ushort pubMsgId = client.Publish("/scanning", // topic
+               Encoding.UTF8.GetBytes("start"), // message body
+               MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, // QoS level
+               false); // retained
         }
 
         void client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
         {
-            if (e.Topic.Equals("/dataset"))  // if this set of data is said to done by MQTT
+            if (e.Topic.Equals("/scanning"))  // if this set of data is said to done by MQTT
             {
                 scanning = false;  // done scanning for this pass
             } else
@@ -53,6 +58,11 @@ namespace CS_Swarm
             }
         }
 
+        void client_MqttMsgPublished(object sender, MqttMsgPublishedEventArgs e)
+        {
+            Debug.WriteLine("MessageId = " + e.MessageId + " Published = " + e.IsPublished);
+        }
+
         private void exitButton_Click(object sender, EventArgs e)
         {
             this.Close();
@@ -60,8 +70,6 @@ namespace CS_Swarm
 
         private void mapButton_Click(object sender, PaintEventArgs e)
         {
-            while (true)  // purposefully making this never-ending TODO: maybe end when no frontiers exist
-            {
                 ConnectToDataSet();
                 while (scanning)
                 {
@@ -117,9 +125,72 @@ namespace CS_Swarm
                     }
                     e.Graphics.DrawClosedCurve(pen, per);
                 }
+                generateNextLocation(borders, frontiers, botLocation);
                 pen.Dispose();
                 client.Disconnect();
+        }
+
+        private void generateNextLocation(ArrayList borders, ArrayList frontiers, PointF botLocation)
+        {
+            float totalX = 0; float totalY = 0; int numberOfPoints = 0;
+            foreach(OrderedPair p in borders)
+            {
+                numberOfPoints++;
+                totalX += p.toCartesian().X;
+                totalY += p.toCartesian().Y;
             }
+            float avgOppositeObstacleX = -totalX / numberOfPoints; float avgOppositeObstacleY = totalY / numberOfPoints;
+            OrderedPair closestFrontier = (OrderedPair) frontiers[0];
+            foreach (OrderedPair p in frontiers)
+            {
+                if(Math.Pow((p.toCartesian().X - avgOppositeObstacleX), 2) + Math.Pow((p.toCartesian().Y - avgOppositeObstacleY), 2) <
+                    Math.Pow((closestFrontier.toCartesian().X - avgOppositeObstacleX), 2) + 
+                    Math.Pow((closestFrontier.toCartesian().Y - avgOppositeObstacleY), 2))
+                {
+                    closestFrontier = p;
+                }
+            }
+            PointF closestLine = new PointF(0, 0);
+            int closestI = 0;
+            int closestH = 0;
+            for(int i = 0; i < 360; i++)
+            {
+                bool checkingLine = true;
+                int h = 1;
+                while (checkingLine) {
+                    bool tooClose = false;
+                    foreach (OrderedPair p in borders)
+                    {
+                        if((Math.Pow((h * Math.Cos(i * Math.PI / 180) - p.toCartesian().X), 2) + Math.Pow((h * Math.Sin(i * Math.PI / 180) - p.toCartesian().Y), 2)) < 10)
+                        {
+                            tooClose = true;
+                        }
+                    }
+                    if (tooClose)
+                    {
+                        checkingLine = false;
+                    }
+                    if((Math.Pow((h * Math.Cos(i * Math.PI / 180) -  closestFrontier.toCartesian().X), 2) + 
+                        Math.Pow((h * Math.Sin(i * Math.PI / 180) - closestFrontier.toCartesian().Y), 2)) < 
+                        (Math.Pow((closestLine.X - closestFrontier.toCartesian().X), 2) + 
+                        Math.Pow((closestLine.Y - closestFrontier.toCartesian().Y), 2)))
+                    {
+                        closestLine = new PointF((float) (h * Math.Cos(i * Math.PI / 180)), (float)(h * Math.Sin(i * Math.PI / 180)));
+                        closestI = i;
+                        closestH = h;
+                    }
+                }
+            }
+            botLocation = new PointF(botLocation.X + closestLine.X, botLocation.Y + closestLine.Y);
+            sendNextLocation(closestH, closestI);
+        }
+
+        private void sendNextLocation(int closestH, int closestI)
+        {
+          ushort msgId = client.Publish("/command", // topic
+            Encoding.UTF8.GetBytes(closestH + "," + closestI), // message body
+            MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, // QoS level
+            true); // retained
         }
 
         private void Form1_Load(object sender, EventArgs e)
