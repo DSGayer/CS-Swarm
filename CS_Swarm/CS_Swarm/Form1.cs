@@ -47,7 +47,7 @@ namespace CS_Swarm
                 string[] obstacle = Encoding.UTF8.GetString(e.Message).Split(',');  // split the string from MQTT into polar coordinates
                 float r = float.Parse(obstacle[0], CultureInfo.InvariantCulture.NumberFormat);  // get the distance
                 float theta = float.Parse(obstacle[0], CultureInfo.InvariantCulture.NumberFormat);  // get the angle
-                int id = (r <= MAX) ? 0 : 2;  // obstacle if within range, horizon if out of range
+                int id = (r <= MAX) ? 0 : 1;  // obstacle if within range, horizon if out of range
                 OrderedPair newObstacle = new OrderedPair(r, theta, 0, botLocation);  // create new OrderedPair to add to rawData
                 rawData.Add(newObstacle);
             }
