@@ -40,14 +40,14 @@
             this.floorPlan.Dock = System.Windows.Forms.DockStyle.Fill;
             this.floorPlan.Location = new System.Drawing.Point(0, 0);
             this.floorPlan.Name = "floorPlan";
-            this.floorPlan.Size = new System.Drawing.Size(1008, 985);
+            this.floorPlan.Size = new System.Drawing.Size(1008, 873);
             this.floorPlan.TabIndex = 0;
             this.floorPlan.TabStop = false;
             // 
             // exitButton
             // 
             this.exitButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.exitButton.Location = new System.Drawing.Point(767, 928);
+            this.exitButton.Location = new System.Drawing.Point(767, 800);
             this.exitButton.Name = "exitButton";
             this.exitButton.Size = new System.Drawing.Size(229, 45);
             this.exitButton.TabIndex = 1;
@@ -57,7 +57,7 @@
             // 
             // mapButton
             // 
-            this.mapButton.Location = new System.Drawing.Point(532, 928);
+            this.mapButton.Location = new System.Drawing.Point(532, 800);
             this.mapButton.Name = "mapButton";
             this.mapButton.Size = new System.Drawing.Size(229, 45);
             this.mapButton.TabIndex = 2;
@@ -69,7 +69,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.exitButton;
-            this.ClientSize = new System.Drawing.Size(1008, 985);
+            this.ClientSize = new System.Drawing.Size(1008, 873);
             this.Controls.Add(this.mapButton);
             this.Controls.Add(this.exitButton);
             this.Controls.Add(this.floorPlan);

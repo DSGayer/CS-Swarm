@@ -11,9 +11,9 @@ namespace CS_Swarm
     {
         private PointF coordinate = new PointF();
         public int identifier; // 0 = border, 1 = frontier, 2 = horizon
-        public Point botLoc;
+        public PointF botLoc;
 
-        public OrderedPair(float x, float y, int id, Point bot)
+        public OrderedPair(float x, float y, int id, PointF bot)
         {
             coordinate = new PointF(x, y);
             identifier = id;
